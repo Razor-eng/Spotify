@@ -3,26 +3,8 @@ import Center from '../components/Center'
 import { getSession } from 'next-auth/react'
 import Head from 'next/head';
 import Player from '../components/Player';
-import { getToken } from "next-auth/jwt";
-import { NextResponse } from "next/server";
-import { useEffect } from 'react';
 
-export default async function Home() {
-  const token = await getToken({ req, secret: process.env.JWT_SECRET });
-  const { pathname } = req.nextUrl;
-  const url = req.nextUrl;
-  useEffect(() => {
-
-    if (pathname.includes("/api/auth") || token) {
-      return NextResponse.next();
-    }
-
-    if (!token && pathname !== "/login") {
-      console.log("redrecting");
-      url.pathname = '/login'
-      return NextResponse.redirect(url);
-    }
-  }, [token])
+export default function Home() {
   return (
     <>
       <Head>
