@@ -1,6 +1,8 @@
+import React from 'react'
 import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
-export async function middleware(req) {
+
+export default async function middleware() {
     const token = await getToken({ req, secret: process.env.JWT_SECRET });
     const { pathname } = req.nextUrl;
     const url = req.nextUrl;
@@ -15,3 +17,7 @@ export async function middleware(req) {
         return NextResponse.redirect(url);
     }
 }
+
+// export async function middleware(req) {
+
+// }
