@@ -4,12 +4,12 @@ export async function middleware(req) {
     const token = await getToken({ req, secret: process.env.JWT_SECRET });
     const { pathname } = req.nextUrl;
     const url = req.nextUrl;
-    
+
     if (pathname.includes("/api/auth") || token) {
         return NextResponse.next();
     }
 
-    if (!token && pathname !== "/login"){
+    if (!token && pathname !== "/login") {
         console.log("redrecting");
         url.pathname = '/login'
         return NextResponse.redirect(url);

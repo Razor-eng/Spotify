@@ -2,13 +2,13 @@ import NextAuth from "next-auth"
 import SpotifyProvider from "next-auth/providers/spotify"
 import spotifyApi, { LOGIN_URL } from "../../../lib/spotify"
 
-async function refreshAccessToken(token){
-    try{
+async function refreshAccessToken(token) {
+    try {
         spotifyApi.setAccessToken(token.accessToken);
         spotifyApi.setRefreshToken(token.refreshToken);
 
-        const {body: refreshedToken} = await spotifyApi.refreshAccessToken();
-        console.log('Refreshed Token is ',refreshedToken);
+        const { body: refreshedToken } = await spotifyApi.refreshAccessToken();
+        console.log('Refreshed Token is ', refreshedToken);
 
         return {
             ...token,
@@ -17,33 +17,33 @@ async function refreshAccessToken(token){
             refreshToken: refreshedToken.refresh_token ?? token.refreshToken,
         };
     }
-    catch(error){
+    catch (error) {
         console.error(error)
-        return{
+        return {
             ...token,
             error: 'RefreshAccessTokenError'
         }
     }
 }
 
-export default NextAuth ({
+export default NextAuth({
     // Configure one or more authentication providers
     providers: [
         SpotifyProvider({
             clientId: process.env.NEXT_PUBLIC_CLIENT_ID,
             clientSecret: process.env.NEXT_PUBLIC_CLIENT_SECRET,
-            authorization:LOGIN_URL
+            authorization: LOGIN_URL
         }),
         // ...add more providers here
     ],
     secret: process.env.JWT_SECRET,
-    pages:{
-        signIn:'/login'
+    pages: {
+        signIn: '/login'
     },
-    callbacks:{
-        async jwt({token,account,user}){
-            if(account && user){
-                return{
+    callbacks: {
+        async jwt({ token, account, user }) {
+            if (account && user) {
+                return {
                     ...token,
                     accessToken: account.access_token,
                     refreshToken: account.refresh_token,
@@ -51,14 +51,14 @@ export default NextAuth ({
                     accessTokenExpires: account.expires_at * 1000,
                 };
             }
-            if(Date.now()<token.accessTokenExpires){
+            if (Date.now() < token.accessTokenExpires) {
                 console.log("Valid Token");
                 return token;
             }
             console.log("Expired!  Refreshing...");
             return await refreshAccessToken(token);
         },
-        async session({session,token}){
+        async session({ session, token }) {
             session.user.accessToken = token.accessToken;
             session.user.refreshToken = token.refreshToken;
             session.user.username = token.username;
